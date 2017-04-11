@@ -13,6 +13,7 @@ public class Table
 {
 	String tableName;
 	ArrayList<Fields> columns = new ArrayList<Fields>();
+	ArrayList<Constraint> constraints = new ArrayList<Constraint>();
 	ArrayList<String[]> records = new ArrayList<String[]>();
 
 	/**
@@ -24,7 +25,7 @@ public class Table
 	{
 		this.tableName = tableName;
 		buildFields(tableName);
-		extractForeignKeys(tableName);
+		extractConstraints(tableName);
 		extractRecords(tableName);
 
 	}
@@ -59,22 +60,30 @@ public class Table
         }
 	}
 
-	private void extractForeignKeys(String tableName) throws SQLException
+	private void extractConstraints(String tableName) throws SQLException
 	{
-		String selectTableForeignKeys = "SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME "
+		String selectTableConstraints = "SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME "
 				+"FROM information_schema.TABLE_CONSTRAINTS i "
 				+"LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME "
 				+"WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' "
 				+"AND i.TABLE_SCHEMA = DATABASE() "
-				+"AND i.TABLE_NAME = 'Creature_Abilities'";
+				+"AND i.TABLE_NAME = ?";
 
-		PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(selectTableForeignKeys);
+		PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(selectTableConstraints);
 		//The result set holding the foreign key information for the table.
+		stmt.setString(1, tableName);
 		ResultSet rs = stmt.executeQuery();
+		System.err.println(tableName+" Constraints");
 		while(rs.next())
 		{
-			//System.out.println(rs.getRow());
-			//TODO get the information from the foreign keys and store it in an arraylist of some sort. (Probably similar to the records one).
+			String constraintTableName = rs.getString(1);
+			String constraintType = rs.getString(2);
+			String constriantName = rs.getString(3);
+			String referencedTableName = rs.getString(4);
+			String referencedColumnName = rs.getString(5);
+			Constraint constraint = new Constraint(constraintTableName,constraintType,constriantName,referencedTableName,referencedColumnName);
+			constraints.add(constraint);
+			System.out.println(constraint.toString());
 		}
 
 	}
@@ -90,6 +99,7 @@ public class Table
 		PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(selectTableDetails);
 		//The result set holding the records for the table.
 		ResultSet rs = stmt.executeQuery();
+		System.err.println(tableName+" Records");
 		while(rs.next())
 		{
 			String[] record = new String[columns.size()];
@@ -100,5 +110,6 @@ public class Table
 			}
 			System.out.println("");
 		}
+		System.out.println("");
 	}
 }

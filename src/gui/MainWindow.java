@@ -9,7 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import main.Record;
 
 public class MainWindow extends Application
 {
@@ -29,7 +28,7 @@ public class MainWindow extends Application
             }
         });
 
-        TableView<Record> recordTable = new TableView<Record>();
+        TableView<String[]> recordTable = new TableView<String[]>();
 
 
         StackPane root = new StackPane();
