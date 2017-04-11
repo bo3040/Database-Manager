@@ -1,13 +1,16 @@
 package main;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * A Class that manages the given Database.
+ * @author bo3040
+ *
+ */
 public class DatabaseManager
 {
 	String username;
@@ -16,18 +19,30 @@ public class DatabaseManager
 	ArrayList<String> tableNames = new ArrayList<String>();
 	ArrayList<Table> tables = new ArrayList<Table>();
 
+	/**
+	 * Initializes the DatabaseConnection singleton and sets its connection.
+	 * Builds the table objects from the table definitions.
+	 * @param username - The username for the database.
+	 * @param password	- The password for the database.
+	 * @param dbLocation	- The location of the database.
+	 * @throws SQLException - Can throw a SQL exception if the connection fails.
+	 */
 	public DatabaseManager(String username, String password,String dbLocation) throws SQLException
 	{
 		this.username = username;
 		this.password = password;
 
-		DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-		dbConn = DriverManager.getConnection(dbLocation, username, password);
+		DatabaseConnection.getInstance().makeConnection(dbLocation, username, password);
+		dbConn = DatabaseConnection.getInstance().getConnection();
 		getTableNames();
 		buildTableObjects();
 
 	}
 
+	/**
+	 * Uses the databases information schema to find the names of all of the tables in the database.
+	 * @throws SQLException - Can throw if sql fails.
+	 */
 	public void getTableNames() throws SQLException
 	{
 		String selectTables ="SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
@@ -44,10 +59,7 @@ public class DatabaseManager
 	{
 		for(String table : tableNames)
 		{
-			String selectTableDetails = "SHOW COLUMNS FROM "+table;
-			PreparedStatement stmt = dbConn.prepareStatement(selectTableDetails);
-			ResultSet rs = stmt.executeQuery();
-			Table tableObject = new Table(table,rs);
+			Table tableObject = new Table(table);
 			tables.add(tableObject);
 		}
 	}
