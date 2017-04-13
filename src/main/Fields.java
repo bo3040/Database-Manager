@@ -19,7 +19,7 @@ public class Fields
 	 * @param canBeNull - If the field can be null.
 	 * @param key - What type of key the field is.
 	 * @param defaultValue - The default value of the field.
-	 * @param extra 
+	 * @param extra
 	 */
 	public Fields(String field, String type, String canBeNull, String key, String defaultValue, String extra)
 	{
@@ -31,6 +31,9 @@ public class Fields
 		this.extra = extra;
 	}
 
+	/** (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString()
 	{

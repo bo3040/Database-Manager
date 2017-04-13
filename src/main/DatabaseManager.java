@@ -63,5 +63,10 @@ public class DatabaseManager
 			tables.add(tableObject);
 		}
 	}
+
+	public ArrayList<String> returnTableNames()
+	{
+		return tableNames;
+	}
 }
 
