@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class Table
 {
-	String tableName;
+	public String tableName;
 	ArrayList<Fields> columns = new ArrayList<Fields>();
 	ArrayList<Constraint> constraints = new ArrayList<Constraint>();
 	ArrayList<String[]> records = new ArrayList<String[]>();
@@ -111,5 +111,15 @@ public class Table
 			System.out.println("");
 		}
 		System.out.println("");
+	}
+
+	public ArrayList<String> getColumnNames()
+	{
+		ArrayList<String> columnNames = new ArrayList<String>();
+		for(Fields column: columns)
+		{
+			columnNames.add(column.field);
+		}
+		return columnNames;
 	}
 }

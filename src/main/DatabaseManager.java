@@ -55,6 +55,11 @@ public class DatabaseManager
 
 	}
 
+	/**
+	 * Builds the table objects.
+	 * The table objects will construct their details based on the table definitions.
+	 * @throws SQLException - Can throw if sql fails.
+	 */
 	public void buildTableObjects() throws SQLException
 	{
 		for(String table : tableNames)
@@ -64,9 +69,20 @@ public class DatabaseManager
 		}
 	}
 
+	/**
+	 * @return an ArrayList of the table names.
+	 */
 	public ArrayList<String> returnTableNames()
 	{
 		return tableNames;
+	}
+
+	/**
+	 * @return an ArrayList of tables.
+	 */
+	public ArrayList<Table> returnTables()
+	{
+		return tables;
 	}
 }
 
