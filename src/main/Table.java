@@ -4,6 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * Holds all the information about a table that will be used to build the user interface.
@@ -14,7 +18,7 @@ public class Table
 	public String tableName;
 	ArrayList<Fields> columns = new ArrayList<Fields>();
 	ArrayList<Constraint> constraints = new ArrayList<Constraint>();
-	ArrayList<String[]> records = new ArrayList<String[]>();
+	ObservableList<List<String>> records = FXCollections.observableArrayList();
 
 	/**
 	 * Constructs a new table object based on the given table name.
@@ -43,6 +47,11 @@ public class Table
 		extractColumnInfo(rs);
 	}
 
+	/**
+	 * Finds and stores the field information from the given table.
+	 * @param tableColumnInfo
+	 * @throws SQLException
+	 */
 	private void extractColumnInfo(ResultSet tableColumnInfo) throws SQLException
 	{
 		System.err.println(tableName);
@@ -60,6 +69,11 @@ public class Table
         }
 	}
 
+	/**
+	 * Finds and stores the constraints from the given table.
+	 * @param tableName
+	 * @throws SQLException
+	 */
 	private void extractConstraints(String tableName) throws SQLException
 	{
 		String selectTableConstraints = "SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME "
@@ -102,17 +116,22 @@ public class Table
 		System.err.println(tableName+" Records");
 		while(rs.next())
 		{
-			String[] record = new String[columns.size()];
+			List<String> record = new ArrayList<String>();
 			for(int i = 0; i<columns.size();i++)
 			{
-				record[i] = rs.getString(columns.get(i).field)+" ";
-				System.out.print(columns.get(i).field+": "+record[i]);
+				record.add(rs.getString(columns.get(i).field));
+				System.out.print(columns.get(i).field+": "+record.get(i));
+
 			}
+			records.add(record);
 			System.out.println("");
 		}
 		System.out.println("");
 	}
 
+	/**
+	 * @return An ArrayList of column names.
+	 */
 	public ArrayList<String> getColumnNames()
 	{
 		ArrayList<String> columnNames = new ArrayList<String>();
@@ -121,5 +140,13 @@ public class Table
 			columnNames.add(column.field);
 		}
 		return columnNames;
+	}
+
+	/**
+	 * @return An ArrayList of records.
+	 */
+	public ObservableList<List<String>> getRecords()
+	{
+		return records;
 	}
 }
