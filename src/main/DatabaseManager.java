@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Class that manages the given Database.
@@ -62,6 +63,7 @@ public class DatabaseManager
 	 */
 	public void buildTableObjects() throws SQLException
 	{
+		tables.clear();
 		for(String table : tableNames)
 		{
 			Table tableObject = new Table(table);
@@ -83,6 +85,32 @@ public class DatabaseManager
 	public ArrayList<Table> returnTables()
 	{
 		return tables;
+	}
+
+	/**
+	 * Deletes the given record from the given table.
+	 * @param table - the table to delete from
+	 * @param selectedRecord - the record to delete
+	 */
+	public void delete(Table table, List<String> selectedRecord)
+	{
+		System.out.println("Deleting "+selectedRecord+" from "+table.tableName);
+		try
+		{
+			//TODO generate and call delete sql statement
+			
+			//String selectTables ="DELETE FROM TABLE_NAME WHERE TABLE_TYPE = ? AND ";
+			//PreparedStatement stmt = dbConn.prepareStatement(selectTables);
+			//ResultSet rs = stmt.executeQuery();
+			
+			
+			buildTableObjects();
+			
+		} catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
 

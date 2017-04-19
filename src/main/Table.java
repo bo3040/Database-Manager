@@ -141,6 +141,10 @@ public class Table
 		}
 		return columnNames;
 	}
+	public ArrayList<Fields> getColumns()
+	{
+		return columns;
+	}
 
 	/**
 	 * @return An ArrayList of records.
@@ -148,5 +152,14 @@ public class Table
 	public ObservableList<List<String>> getRecords()
 	{
 		return records;
+	}
+	
+	/**
+	 * @param row the row in the display table the record is in.
+	 * @return The record that is in the column.
+	 */
+	public List<String> getRecordByRow(int row)
+	{
+		return records.get(row);
 	}
 }
