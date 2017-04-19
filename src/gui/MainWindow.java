@@ -35,7 +35,7 @@ import main.Table;
  * A window for selecting the database to work based on and that will open
  * prompts for Add, Edit, and deleting of Records. Also supports executing a
  * custom sql query.
- * 
+ *
  * @author Brad Olah
  *
  */
@@ -53,7 +53,7 @@ public class MainWindow extends Application
 
 	/**
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
 	@Override
@@ -81,8 +81,7 @@ public class MainWindow extends Application
 
 		ChoiceBox<String> tableSelector = new ChoiceBox<String>(tableNames);
 		// A listener for when the tableSelector has a value selected.
-		tableSelector.getSelectionModel().selectedIndexProperty()
-				.addListener(new ChangeListener<Number>()
+		tableSelector.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
 				{
 					@Override
 					public void changed(
@@ -117,23 +116,23 @@ public class MainWindow extends Application
 	}
 
 	/**
-	 * load
-	 * 
+	 * Load the selected table.
+	 *
 	 * @param tableNumber
 	 */
 	protected void loadTable(Integer tableNumber)
 	{
 		Table selectedTable = tables.get(tableNumber);
-		loadColumnNames(selectedTable);
+		loadColumnDetails(selectedTable);
 		loadRecords(selectedTable);
 	}
 
 	/**
 	 * Loads the column names into the table for display.
-	 * 
+	 *
 	 * @param selectedTable
 	 */
-	private void loadColumnNames(Table selectedTable)
+	private void loadColumnDetails(Table selectedTable)
 	{
 		recordTable.getColumns().clear();
 		System.out.println(selectedTable.tableName);
@@ -283,16 +282,16 @@ public class MainWindow extends Application
 
 	/**
 	 * Loads the table records into the table for display.
-	 * 
+	 *
 	 * @param selectedTable
 	 */
 	private void loadRecords(Table selectedTable)
 	{
 		recordTable.getItems().clear();
-		ObservableList<List<String>> records = FXCollections
-				.observableArrayList(selectedTable.getRecords());
+		ObservableList<List<String>> records = FXCollections.observableArrayList(selectedTable.getRecords());
 		recordTable.setItems(records);
 	}
+
 
 	/**
 	 * Starts the application

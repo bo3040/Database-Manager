@@ -5,7 +5,7 @@ package main;
  * @author bo3040
  *
  */
-public class Fields
+public class FieldDetails
 {
 
 	/**
@@ -21,7 +21,7 @@ public class Fields
 	 * @param defaultValue - The default value of the field.
 	 * @param extra
 	 */
-	public Fields(String field, String type, String canBeNull, String key, String defaultValue, String extra)
+	public FieldDetails(String field, String type, String canBeNull, String key, String defaultValue, String extra)
 	{
 		this.field=field;
 		this.type = type;

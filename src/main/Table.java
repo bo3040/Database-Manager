@@ -15,8 +15,11 @@ import javafx.collections.ObservableList;
  */
 public class Table
 {
+	/**
+	 *
+	 */
 	public String tableName;
-	ArrayList<Fields> columns = new ArrayList<Fields>();
+	ArrayList<FieldDetails> columns = new ArrayList<FieldDetails>();
 	ArrayList<Constraint> constraints = new ArrayList<Constraint>();
 	ObservableList<List<String>> records = FXCollections.observableArrayList();
 
@@ -63,7 +66,7 @@ public class Table
 			String key = tableColumnInfo.getString("Key");
 			String defaultValue = tableColumnInfo.getString("Default");
 			String extra = tableColumnInfo.getString("Extra");
-			Fields column = new Fields(field,type,canBeNull,key,defaultValue,extra);
+			FieldDetails column = new FieldDetails(field,type,canBeNull,key,defaultValue,extra);
 			columns.add(column);
 			System.out.println(column.toString());
         }
@@ -76,7 +79,7 @@ public class Table
 	 */
 	private void extractConstraints(String tableName) throws SQLException
 	{
-		String selectTableConstraints = "SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME "
+		String selectTableConstraints = "SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME,k.COLUMN_NAME "
 				+"FROM information_schema.TABLE_CONSTRAINTS i "
 				+"LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME "
 				+"WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' "
@@ -95,7 +98,8 @@ public class Table
 			String constriantName = rs.getString(3);
 			String referencedTableName = rs.getString(4);
 			String referencedColumnName = rs.getString(5);
-			Constraint constraint = new Constraint(constraintTableName,constraintType,constriantName,referencedTableName,referencedColumnName);
+			String columnName = rs.getString(6);
+			Constraint constraint = new Constraint(constraintTableName,constraintType,constriantName,referencedTableName,referencedColumnName,columnName);
 			constraints.add(constraint);
 			System.out.println(constraint.toString());
 		}
@@ -135,13 +139,17 @@ public class Table
 	public ArrayList<String> getColumnNames()
 	{
 		ArrayList<String> columnNames = new ArrayList<String>();
-		for(Fields column: columns)
+		for(FieldDetails column: columns)
 		{
 			columnNames.add(column.field);
 		}
 		return columnNames;
 	}
-	public ArrayList<Fields> getColumns()
+
+	/**
+	 * @return the column information.
+	 */
+	public ArrayList<FieldDetails> getColumns()
 	{
 		return columns;
 	}
@@ -153,7 +161,7 @@ public class Table
 	{
 		return records;
 	}
-	
+
 	/**
 	 * @param row the row in the display table the record is in.
 	 * @return The record that is in the column.
@@ -161,5 +169,46 @@ public class Table
 	public List<String> getRecordByRow(int row)
 	{
 		return records.get(row);
+	}
+
+	/**
+	 * Returns the foreign key values for the given field.
+	 * @param field - The field to get the foreign keys from.
+	 * @return the list of values of the foreign key.
+	 */
+	public ObservableList<String> getForeginKeyValues(FieldDetails field)
+	{
+		ObservableList<String> foreignKeys = FXCollections.observableArrayList();
+		for(Constraint constraint : constraints)
+		{
+			if(constraint.columnName.equals(field.field))
+			{
+				System.out.println("Getting foreign key values");
+
+
+				try
+				{
+					String selectForeignKeyDetails = "SELECT "+constraint.referencedColumnName+ " FROM "+constraint.referencedTableName;
+					PreparedStatement stmt;
+					stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(selectForeignKeyDetails);
+					//The result set holding the records for the table.
+					ResultSet rs = stmt.executeQuery();
+
+					while(rs.next())
+					{
+						foreignKeys.add(constraint.referencedTableName+": "+rs.getString(1));
+						System.out.println(constraint.referencedTableName+": "+rs.getString(1));
+					}
+
+				} catch (SQLException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+			}
+		}
+		return foreignKeys;
 	}
 }

@@ -6,7 +6,7 @@ package main;
  */
 public class Constraint
 {
-	public String tableName, constraintType,constraintName,referencedTableName,referencedColumnName;
+	public String tableName, constraintType,constraintName,referencedTableName,referencedColumnName,columnName;
 
 	/**
 	 * Creates a new constraint with the given values.
@@ -15,14 +15,16 @@ public class Constraint
 	 * @param constraintName - The name of the constraint.
 	 * @param referencedTableName - The table the constraint references.
 	 * @param referencedColumnName - The column in the referenced table the constraint is linked with.
+	 * @param columnName - The column in the table the key is linked to.
 	 */
-	public Constraint(String tableName, String constraintType, String constraintName, String referencedTableName, String referencedColumnName)
+	public Constraint(String tableName, String constraintType, String constraintName, String referencedTableName, String referencedColumnName, String columnName)
 	{
 		this.tableName = tableName;
 		this.constraintType = constraintType;
 		this.constraintName = constraintName;
 		this.referencedTableName = referencedTableName;
 		this.referencedColumnName = referencedColumnName;
+		this.columnName = columnName;
 	}
 
 	/**

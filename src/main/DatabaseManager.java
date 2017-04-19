@@ -98,14 +98,14 @@ public class DatabaseManager
 		try
 		{
 			//TODO generate and call delete sql statement
-			
+
 			//String selectTables ="DELETE FROM TABLE_NAME WHERE TABLE_TYPE = ? AND ";
 			//PreparedStatement stmt = dbConn.prepareStatement(selectTables);
 			//ResultSet rs = stmt.executeQuery();
-			
-			
+
+
 			buildTableObjects();
-			
+
 		} catch (SQLException e)
 		{
 			// TODO Auto-generated catch block

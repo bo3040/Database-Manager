@@ -1,9 +1,11 @@
 package gui;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import main.Fields;
+import main.FieldDetails;
 import main.Table;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -12,13 +14,16 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -32,11 +37,12 @@ import javafx.stage.Stage;
  * The base class for a database window
  * @author Brad
  */
-public class DatabaseWindow extends Stage 
+public class DatabaseWindow extends Stage
 {
 	Table selectedTable;
 	List<String> record;
 	GridPane grid;
+	SubmitBehavior submitBehavior;
 	/**
 	 * Starts constructing a window for editing.
 	 * @param selectedTable
@@ -46,9 +52,11 @@ public class DatabaseWindow extends Stage
 	{
 		this.selectedTable = selectedTable;
 		this.record = record;
+		submitBehavior= new EditBehavior();
 		setTitle("Edit");
 		init();
 		fillFields();
+
 	}
 
 	/**
@@ -58,10 +66,11 @@ public class DatabaseWindow extends Stage
 	public DatabaseWindow(Table selectedTable)
 	{
 		this.selectedTable = selectedTable;
+		submitBehavior= new AddBehavior();
 		setTitle("Add");
 		init();
 	}
-	
+
 	/**
 	 * Initialization that happens for both types of window.
 	 */
@@ -75,35 +84,68 @@ public class DatabaseWindow extends Stage
 		setScene(scene);
 		initModality(Modality.APPLICATION_MODAL);
 		buildFields();
-		
-		
+
+
 		show();
 	}
-	
+
 	/**
 	 * Builds the fields based on the tables columns.
 	 */
 	private void buildFields()
 	{
-		
-		ArrayList<Fields> fields = selectedTable.getColumns();
+
+		ArrayList<FieldDetails> fields = selectedTable.getColumns();
 		Label tableName = new Label("Accessing Table: "+selectedTable.tableName);
 		grid.add(tableName, 0, 0,2,1);
 		int row = 1;
-		for(Fields field : fields)
+		for(FieldDetails field : fields)
 		{
-			HBox fieldBox = new HBox();
 			Label fieldLabel = new Label(field.field);
 			Control fieldControl = getFieldType(field);
 			grid.add(fieldLabel,0,row);
 			grid.add(fieldControl,1,row,2,1);
 			row++;
-//			fieldBox.getChildren().add(fieldLabel);
-//			fieldBox.getChildren().add(fieldText);
-//			grid.getChildren().add(fieldBox);
 		}
+		HBox buttons = new HBox();
+		Button submit = new Button("Submit");
+		Button cancel = new Button("Cancel");
+		buttons.getChildren().add(submit);
+		if(submitBehavior.getClass().equals(EditBehavior.class))
+		{
+			Button reset = new Button("ResetValues");
+			reset.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent event)
+				{
+					fillFields();
+				}
+			});
+		}
+		buttons.getChildren().add(cancel);
+
+		submit.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				submitValues();
+				close();
+			}
+		});
+
+		cancel.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				close();
+			}
+		});
+		grid.add(buttons,0,row);
 	}
-	
+
 	/**
 	 * Fills the fields with the initial values for editing a record.
 	 */
@@ -119,7 +161,8 @@ public class DatabaseWindow extends Stage
 			}
 			if(control.getClass().equals(ComboBox.class))
 			{
-				//TODO populate with foreign keys.
+				ComboBox<String> controlBox = (ComboBox<String>) control;
+				controlBox.getSelectionModel().select(record.get(i));
 			}
 			row++;
 		}
@@ -130,12 +173,12 @@ public class DatabaseWindow extends Stage
 	 * @param field - The field to add a row for.
 	 * @return the Control instance that corresponds to the field.
 	 */
-	private Control getFieldType(Fields field)
+	private Control getFieldType(FieldDetails field)
 	{
-		Control control = null; 
+		Control control = null;
 		if(field.key.equals("MUL"))
 		{
-			control = new ComboBox<String>();
+			control = makeForeignKeyField(field);
 		}else if(field.extra.equals("auto_increment"))
 		{
 			control = new TextField();
@@ -149,7 +192,66 @@ public class DatabaseWindow extends Stage
 		control.autosize();
 		return control;
 	}
-	
+
+	/**
+	 * Makes a ComboBox with the correct foreign keys.
+	 * @param field
+	 * @return
+	 */
+	private ComboBox<String> makeForeignKeyField(FieldDetails field)
+	{
+		ComboBox<String> foreignKeyComboBox = new ComboBox<String>(selectedTable.getForeginKeyValues(field));
+
+		return foreignKeyComboBox;
+	}
+
+	/**
+	 * returns the current values entered in the fields.
+	 */
+	private void submitValues()
+	{
+		boolean error = false;
+		ArrayList<String> values = new ArrayList<String>();
+		String notification = new String();
+		for(int i=0; i<selectedTable.getColumns().size();i++)
+		{
+			Node node = getNodeFromGridPane(grid,1,i+1);
+			if(node.getClass().equals(TextField.class))
+			{
+				TextField field = (TextField) node;
+				if(field.getText().equals(""))
+				{
+					notification = notification+"Field "+(i+1)+" has no value\n";
+					error = true;
+				}else
+				{
+					values.add(field.getText());
+					System.out.println(field.getText());
+				}
+			}else if(node.getClass().equals(ComboBox.class))
+			{
+				ComboBox comboBox = (ComboBox)node;
+				if(comboBox.getSelectionModel().getSelectedItem() == null)
+				{
+					notification = notification+"Field "+(i+1)+" has no value\n";
+					error = true;
+				}else
+				{
+					values.add((String) comboBox.getSelectionModel().getSelectedItem());
+					System.out.println(comboBox.getSelectionModel().getSelectedItem());
+				}
+			}
+		}
+		if(error== false)
+		{
+
+			submitBehavior.execute(selectedTable,values);
+		}else
+		{
+			notificationAlert(notification);
+		}
+	}
+
 	/**
 	 * Gets the node at the given location in the given grid.
 	 * @param gridPane - The GridPane to look through
@@ -164,5 +266,18 @@ public class DatabaseWindow extends Stage
 	        }
 	    }
 	    return null;
+	}
+
+	/**
+	 * A popup window asking for confirmation for a delete.
+	 * @param record
+	 * @throws SQLException
+	 */
+	private void notificationAlert(String message)
+	{
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error");
+		alert.setHeaderText(message);
+		Optional<ButtonType> result = alert.showAndWait();
 	}
 }
