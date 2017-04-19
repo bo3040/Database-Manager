@@ -11,7 +11,7 @@ public class AddBehavior implements SubmitBehavior
 	@Override
 	public void execute(Table selectedTable, ArrayList<String> values)
 	{
-		// TODO Auto-generated method stub
+		System.out.print("Insert info into database.");
 
 	}
 }

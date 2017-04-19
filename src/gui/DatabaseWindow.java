@@ -21,6 +21,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Alert.AlertType;
@@ -45,8 +46,8 @@ public class DatabaseWindow extends Stage
 	SubmitBehavior submitBehavior;
 	/**
 	 * Starts constructing a window for editing.
-	 * @param selectedTable
-	 * @param record
+	 * @param selectedTable - The table that the record is from.
+	 * @param record - The record from the table.
 	 */
 	public DatabaseWindow(Table selectedTable, List<String> record)
 	{
@@ -61,7 +62,7 @@ public class DatabaseWindow extends Stage
 
 	/**
 	 * Starts constructing a window for adding.
-	 * @param selectedTable
+	 * @param selectedTable - The table that the record is from.
 	 */
 	public DatabaseWindow(Table selectedTable)
 	{
@@ -76,16 +77,16 @@ public class DatabaseWindow extends Stage
 	 */
 	private void init()
 	{
+		ScrollPane scrollPane = new ScrollPane();
+		Scene scene = new Scene(scrollPane, 450, 250);
 		grid = new GridPane();
-		Scene scene = new Scene(grid, 300, 250);
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(15, 5, 5, 15));
 		setScene(scene);
 		initModality(Modality.APPLICATION_MODAL);
 		buildFields();
-
-
+		scrollPane.setContent(grid);
 		show();
 	}
 
@@ -122,6 +123,7 @@ public class DatabaseWindow extends Stage
 					fillFields();
 				}
 			});
+			buttons.getChildren().add(reset);
 		}
 		buttons.getChildren().add(cancel);
 

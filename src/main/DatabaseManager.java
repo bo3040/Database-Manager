@@ -112,5 +112,35 @@ public class DatabaseManager
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Runs a custom query.
+	 * @param query - The query to run.
+	 */
+	public String runCustomQuery(String query)
+	{
+		PreparedStatement stmt;
+		String results = new String();
+		try
+		{
+			stmt = dbConn.prepareStatement(query);
+			ResultSet rs = stmt.executeQuery();
+
+			while(rs.next())
+			{
+				for(int i = 0;i<rs.getMetaData().getColumnCount();i++)
+				{
+
+					results= results + rs.getMetaData().getColumnLabel(i+1)+": "+rs.getString(i+1)+"\t";
+				}
+				results += "\n";
+			}
+		} catch (SQLException e)
+		{
+			System.err.println("Error running custom query.");
+			e.printStackTrace();
+		}
+		return results;
+	}
 }
 

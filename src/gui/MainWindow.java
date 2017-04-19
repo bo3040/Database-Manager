@@ -19,10 +19,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -100,16 +102,35 @@ public class MainWindow extends Application
 
 		recordTable = new TableView<List<String>>();
 
+		VBox customQueryBox = new VBox();
+
+		TextArea textBox = new TextArea();
+		Button submitQueryButton = new Button("Submit Query");
+		submitQueryButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				textBox.setText(dbManager.runCustomQuery(textBox.getText()));
+			}
+		});
+		customQueryBox.getChildren().add(new Label("Custom Query"));
+		customQueryBox.getChildren().add(textBox);
+		customQueryBox.getChildren().add(submitQueryButton);
 		VBox root = new VBox();
+
+
 		root.getChildren().add(tableSelectBox);
 		root.getChildren().add(btn);
 		root.getChildren().add(recordTable);
+		root.getChildren().add(new Separator());
+		root.getChildren().add(customQueryBox);
 		if (tableSelector.getSelectionModel().isEmpty())
 		{
 			btn.setDisable(true);
 			recordTable.setDisable(true);
 		}
-		Scene scene = new Scene(root, 300, 250);
+		Scene scene = new Scene(root, 600, 500);
 		primaryStage.setTitle("Database Manager");
 		primaryStage.setScene(scene);
 		primaryStage.show();
