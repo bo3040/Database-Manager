@@ -51,7 +51,9 @@ public class MainWindow extends Application
 	ObservableList<Table> tables;
 	TableView<List<String>> recordTable;
 	Table currentTable;
+	Integer currentTableNumber;
 	DatabaseManager dbManager;
+	MainWindow mainWindow;
 
 	/**
 	 * (non-Javadoc)
@@ -62,7 +64,7 @@ public class MainWindow extends Application
 	public void start(Stage primaryStage) throws SQLException
 	{
 		dbManager = new DatabaseManager(username, password,dbLocation);
-
+		mainWindow = this;
 		tableNames = FXCollections.observableArrayList(dbManager.returnTableNames());
 		tables = FXCollections.observableArrayList(dbManager.returnTables());
 
@@ -75,7 +77,7 @@ public class MainWindow extends Application
 			public void handle(ActionEvent event)
 			{
 				@SuppressWarnings("unused")//This addWindow displays a window on its own.
-				final Stage addWindow = new DatabaseWindow(currentTable);
+				final Stage addWindow = new DatabaseWindow(mainWindow,currentTable);
 			}
 		});
 
@@ -93,6 +95,7 @@ public class MainWindow extends Application
 						loadTable((Integer) number2);
 						btn.setDisable(false);
 						recordTable.setDisable(false);
+						currentTableNumber = (Integer)number2;
 						currentTable = tables.get((Integer) number2);
 					}
 				});
@@ -134,6 +137,11 @@ public class MainWindow extends Application
 		primaryStage.setTitle("Database Manager");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	private void loadTables()
+	{
+		tables = FXCollections.observableArrayList(dbManager.returnTables());
 	}
 
 	/**
@@ -222,7 +230,7 @@ public class MainWindow extends Application
 								int selectedIndex = getTableRow().getIndex();
 
 								List<String> record = recordTable.getItems().get(selectedIndex);
-								final Stage editWindow = new DatabaseWindow(currentTable,record);
+								final Stage editWindow = new DatabaseWindow(mainWindow,currentTable,record);
 								System.out.print(record);
 							});
 							setGraphic(btn);
@@ -295,6 +303,9 @@ public class MainWindow extends Application
 		if (result.get() == ButtonType.OK)
 		{
 			dbManager.delete(currentTable,record);
+			currentTable = tables.get(currentTableNumber);
+			reloadCurrentTable();
+			loadRecords(currentTable);
 		} else
 		{
 			alert.close();
@@ -306,11 +317,12 @@ public class MainWindow extends Application
 	 *
 	 * @param selectedTable
 	 */
-	private void loadRecords(Table selectedTable)
+	void loadRecords(Table selectedTable)
 	{
 		recordTable.getItems().clear();
 		ObservableList<List<String>> records = FXCollections.observableArrayList(selectedTable.getRecords());
 		recordTable.setItems(records);
+		recordTable.refresh();
 	}
 
 
@@ -321,5 +333,14 @@ public class MainWindow extends Application
 	public static void main(String[] args)
 	{
 		launch(args);
+	}
+
+	/**
+	 * Reloads the current table.
+	 */
+	public void reloadCurrentTable()
+	{
+		loadTables();
+		currentTable = tables.get(currentTableNumber);
 	}
 }

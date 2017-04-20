@@ -1,11 +1,12 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.scene.layout.HBox;
 import main.Table;
 
 public interface SubmitBehavior
 {
-	public void execute(Table selectedTable, ArrayList<String> values);
+	public String execute(Table selectedTable, ArrayList<String> values, List<String> record);
 }

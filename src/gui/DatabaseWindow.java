@@ -44,13 +44,15 @@ public class DatabaseWindow extends Stage
 	List<String> record;
 	GridPane grid;
 	SubmitBehavior submitBehavior;
+	MainWindow mainWindow;
 	/**
 	 * Starts constructing a window for editing.
 	 * @param selectedTable - The table that the record is from.
 	 * @param record - The record from the table.
 	 */
-	public DatabaseWindow(Table selectedTable, List<String> record)
+	public DatabaseWindow(MainWindow mainWindow, Table selectedTable, List<String> record)
 	{
+		this.mainWindow = mainWindow;
 		this.selectedTable = selectedTable;
 		this.record = record;
 		submitBehavior= new EditBehavior();
@@ -64,8 +66,9 @@ public class DatabaseWindow extends Stage
 	 * Starts constructing a window for adding.
 	 * @param selectedTable - The table that the record is from.
 	 */
-	public DatabaseWindow(Table selectedTable)
+	public DatabaseWindow(MainWindow mainWindow, Table selectedTable)
 	{
+		this.mainWindow = mainWindow;
 		this.selectedTable = selectedTable;
 		submitBehavior= new AddBehavior();
 		setTitle("Add");
@@ -164,7 +167,7 @@ public class DatabaseWindow extends Stage
 			if(control.getClass().equals(ComboBox.class))
 			{
 				ComboBox<String> controlBox = (ComboBox<String>) control;
-				controlBox.getSelectionModel().select(record.get(i));
+				controlBox.getSelectionModel().select(Integer.parseInt(record.get(i))-1);
 			}
 			row++;
 		}
@@ -240,14 +243,17 @@ public class DatabaseWindow extends Stage
 				}else
 				{
 					values.add((String) comboBox.getSelectionModel().getSelectedItem());
-					System.out.println(comboBox.getSelectionModel().getSelectedItem());
 				}
 			}
 		}
 		if(error== false)
 		{
+			mainWindow.dbManager.runCustomQuery(submitBehavior.execute(selectedTable,values,record));
+			//submitBehavior.execute(selectedTable,values,record);
+			mainWindow.reloadCurrentTable();
+			mainWindow.loadRecords(mainWindow.currentTable);
 
-			submitBehavior.execute(selectedTable,values);
+
 		}else
 		{
 			notificationAlert(notification);

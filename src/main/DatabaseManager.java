@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * A Class that manages the given Database.
- * @author bo3040
+ * @author Brad Olah
  *
  */
 public class DatabaseManager
@@ -97,18 +97,24 @@ public class DatabaseManager
 		System.out.println("Deleting "+selectedRecord+" from "+table.tableName);
 		try
 		{
-			//TODO generate and call delete sql statement
+			String deleteQuery ="DELETE FROM "+table.tableName+ " WHERE ";
+			for(int i =0; i < table.getColumns().size();i++)
+			{
+				 deleteQuery += table.getColumns().get(i).field +" = "+ selectedRecord.get(i);
+				 if(i != table.getColumns().size()-1)
+				 {
+					 deleteQuery += " AND ";
+				 }
+			}
 
-			//String selectTables ="DELETE FROM TABLE_NAME WHERE TABLE_TYPE = ? AND ";
-			//PreparedStatement stmt = dbConn.prepareStatement(selectTables);
-			//ResultSet rs = stmt.executeQuery();
-
+			PreparedStatement stmt = dbConn.prepareStatement(deleteQuery);
+			int rs = stmt.executeUpdate();
 
 			buildTableObjects();
 
 		} catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
+			System.err.println("Error while deleting");
 			e.printStackTrace();
 		}
 	}
@@ -124,22 +130,32 @@ public class DatabaseManager
 		try
 		{
 			stmt = dbConn.prepareStatement(query);
-			ResultSet rs = stmt.executeQuery();
 
-			while(rs.next())
+			String[] querySplit = query.split(" ");
+			if(querySplit[0].toUpperCase().equals("SELECT"))
 			{
-				for(int i = 0;i<rs.getMetaData().getColumnCount();i++)
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next())
 				{
-
-					results= results + rs.getMetaData().getColumnLabel(i+1)+": "+rs.getString(i+1)+"\t";
+					for(int i = 0;i<rs.getMetaData().getColumnCount();i++)
+					{
+						results= results + rs.getMetaData().getColumnLabel(i+1)+": "+rs.getString(i+1)+"\t";
+					}
+					results += "\n";
 				}
-				results += "\n";
+			}else
+			{
+				stmt.executeUpdate();
+				results += "Executed "+querySplit[0]+" statement.";
 			}
+			buildTableObjects();
+
 		} catch (SQLException e)
 		{
-			System.err.println("Error running custom query.");
+			System.err.println("Error running query.");
 			e.printStackTrace();
 		}
+
 		return results;
 	}
 }
