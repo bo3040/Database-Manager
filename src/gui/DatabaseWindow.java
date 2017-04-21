@@ -7,11 +7,9 @@ import java.util.Optional;
 
 import main.FieldDetails;
 import main.Table;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -20,23 +18,18 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.VBoxBuilder;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
  * The base class for a database window
- * @author Brad
+ * @author Brad Olah
  */
 public class DatabaseWindow extends Stage
 {
@@ -47,6 +40,7 @@ public class DatabaseWindow extends Stage
 	MainWindow mainWindow;
 	/**
 	 * Starts constructing a window for editing.
+	 * @param mainWindow - The main window that created this one. Used to refresh the main window when commands are ran.
 	 * @param selectedTable - The table that the record is from.
 	 * @param record - The record from the table.
 	 */
@@ -64,6 +58,7 @@ public class DatabaseWindow extends Stage
 
 	/**
 	 * Starts constructing a window for adding.
+	 * @param mainWindow - The window that made this popup.
 	 * @param selectedTable - The table that the record is from.
 	 */
 	public DatabaseWindow(MainWindow mainWindow, Table selectedTable)

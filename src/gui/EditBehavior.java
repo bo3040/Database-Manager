@@ -8,6 +8,10 @@ import javafx.scene.layout.HBox;
 import main.FieldDetails;
 import main.Table;
 
+/**
+ * A Behavior that builds the update query from given information.
+ * @author Brad Olah
+ */
 public class EditBehavior implements SubmitBehavior
 {
 
@@ -29,12 +33,12 @@ public class EditBehavior implements SubmitBehavior
 				if(columns.get(i).key.equals("MUL"))
 				{
 					String[] splitValues = values.get(i).split(" ");
-					changes += selectedTable.getColumnNames().get(i)+" = "+splitValues[1];
+					changes += selectedTable.getColumnNames().get(i)+" = '"+splitValues[1]+"'";
 				}else
 				{
-					changes += selectedTable.getColumnNames().get(i)+" = "+values.get(i);
+					changes += selectedTable.getColumnNames().get(i)+" = '"+values.get(i)+"'";
 				}
-				whereClause += selectedTable.getColumns().get(i).field +" = "+ record.get(i);
+				whereClause += selectedTable.getColumns().get(i).field +" = '"+ record.get(i)+"'";
 				if(i != selectedTable.getColumns().size()-1)
 				{
 					changes += ",";
@@ -44,6 +48,7 @@ public class EditBehavior implements SubmitBehavior
 		}
 		updateQuery += changes;
 		updateQuery += " WHERE "+whereClause;
+		System.out.println(updateQuery);
 		return updateQuery;
 
 	}

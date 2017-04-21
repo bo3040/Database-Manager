@@ -2,7 +2,7 @@ package main;
 
 /**
  * A class that holds the information of a tables fields.
- * @author bo3040
+ * @author Brad Olah
  *
  */
 public class FieldDetails

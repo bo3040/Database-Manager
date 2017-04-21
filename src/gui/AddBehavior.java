@@ -1,14 +1,16 @@
 package gui;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
 import main.FieldDetails;
 import main.Table;
 
+/**
+ * A Behavior that builds the insert query from given information.
+ * @author Brad Olah
+ *
+ */
 public class AddBehavior implements SubmitBehavior
 {
 	@Override
@@ -26,10 +28,10 @@ public class AddBehavior implements SubmitBehavior
 				if(columns.get(i).key.equals("MUL"))
 				{
 					String[] splitValues = values.get(i).split(" ");
-					recordValues += splitValues[1];
+					recordValues += "'"+splitValues[1]+"'";
 				}else
 				{
-					recordValues += values.get(i);
+					recordValues += "'"+values.get(i)+"'";
 				}
 				if(i != selectedTable.getColumns().size()-1)
 				{

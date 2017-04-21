@@ -139,6 +139,9 @@ public class MainWindow extends Application
 		primaryStage.show();
 	}
 
+	/**
+	 * loads the tables from the database manager
+	 */
 	private void loadTables()
 	{
 		tables = FXCollections.observableArrayList(dbManager.returnTables());

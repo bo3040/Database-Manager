@@ -100,7 +100,7 @@ public class DatabaseManager
 			String deleteQuery ="DELETE FROM "+table.tableName+ " WHERE ";
 			for(int i =0; i < table.getColumns().size();i++)
 			{
-				 deleteQuery += table.getColumns().get(i).field +" = "+ selectedRecord.get(i);
+				 deleteQuery += table.getColumns().get(i).field +" = '"+ selectedRecord.get(i)+"'";
 				 if(i != table.getColumns().size()-1)
 				 {
 					 deleteQuery += " AND ";
