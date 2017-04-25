@@ -165,9 +165,7 @@ public class DatabaseWindow extends Stage
 				ComboBox<String> controlBox = (ComboBox<String>) control;
 				for(int j =0; j<controlBox.getItems().size();j++)
 				{
-					System.out.println(record.get(i));
 					String splitFieldValue = controlBox.getItems().get(j).split(" ")[1];
-					System.out.println(splitFieldValue);
 					if(splitFieldValue.equals(record.get(i)))
 					{
 						location = j;
