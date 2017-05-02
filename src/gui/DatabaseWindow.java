@@ -144,6 +144,7 @@ public class DatabaseWindow extends Stage
 			}
 		});
 		grid.add(buttons,0,row);
+		this.setHeight(100+row*35);
 	}
 
 	/**

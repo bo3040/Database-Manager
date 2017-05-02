@@ -5,6 +5,10 @@ import java.sql.SQLException;
 
 import main.DatabaseConnection;
 
+/**
+ * Builds the database
+ * @author Brad Olah
+ */
 public class DatabaseBuilder
 {
 
